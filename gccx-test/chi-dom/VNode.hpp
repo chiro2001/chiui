@@ -12,19 +12,11 @@
 #include <functional>
 #include <utility>
 #include <unordered_map>
+#include "event.h"
 
-// extern unsigned int currentHash;
-// extern std::unordered_map<std::string, unsigned int> hashes;
+namespace chidom {
 
-namespace asmdom {
-
-// extern unsigned int currentHash;
-// extern std::unordered_map<std::string, unsigned int> hashes;
-
-// unsigned int currentHash = 0;
-// std::unordered_map<std::string, unsigned int> hashes;
-
-typedef std::function<bool(int)> Callback;
+typedef std::function<void(const Event &)> Callback;
 typedef std::unordered_map<std::string, std::string> Attrs;
 typedef std::unordered_map<std::string, std::string> Props;
 typedef std::unordered_map<std::string, Callback> Callbacks;
@@ -93,7 +85,6 @@ private:
         key = data.attrs["key"];
         data.attrs.erase("key");
       }
-
       if (sel[0] == '!') {
         hash |= isComment;
         sel = "";
@@ -115,7 +106,6 @@ private:
             ++it;
           }
         }
-
         bool addNS = injectSvgNamespace || (sel[0] == 's' && sel[1] == 'v' && sel[2] == 'g');
         if (addNS) {
           hash |= hasNS;
@@ -123,10 +113,8 @@ private:
         }
 
         if (!data.attrs.empty()) hash |= hasAttrs;
-#ifndef ASMDOM_JS_SIDE
         if (!data.props.empty()) hash |= hasProps;
         if (!data.callbacks.empty()) hash |= hasCallbacks;
-#endif
         if (!children.empty()) {
           hash |= hasDirectChildren;
 
@@ -137,24 +125,18 @@ private:
             );
           }
         }
-
         if (sel[0] == '\0') {
           hash |= isFragment;
         } else {
           if (hashes[sel] == 0) {
             hashes[sel] = ++currentHash;
           }
-
           hash |= (hashes[sel] << 13) | isElement;
-
-#ifndef ASMDOM_JS_SIDE
           if ((hash & hasCallbacks) && data.callbacks.count("ref")) {
             hash |= hasRef;
           }
-#endif
         }
       }
-
       hash |= isNormalized;
     }
   }

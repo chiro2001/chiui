@@ -1,7 +1,8 @@
-#include "chi-dom.h"
+#include "chi-dom.hpp"
+#include <string>
 #include <cstdio>
 
-using namespace asmdom;
+using namespace chidom;
 
 void blanks(int width) {
   while (width-- > 0)
@@ -13,6 +14,14 @@ void scan_dom(VNode *vnode, int depth = 0) {
   blanks(depth);
   if (!vnode->children.empty()) {
     printf("<%s>\n", vnode->sel.c_str());
+    if (!vnode->data.callbacks.empty()) {
+      for (const auto &f : vnode->data.callbacks) {
+        blanks(depth + 1);
+        printf("callback: %s\n", f.first.c_str());
+        Event event{.target = vnode, .type = f.first};
+        f.second(event);
+      }
+    }
     for (const auto child : vnode->children) {
       if (child == nullptr) continue;
       scan_dom(child, depth + 1);
@@ -20,18 +29,41 @@ void scan_dom(VNode *vnode, int depth = 0) {
     blanks(depth);
     printf("</%s>\n", vnode->sel.c_str());
   } else {
-    printf("%s\n", vnode->sel.c_str());
+    printf("[%s]\n", vnode->sel.c_str());
   }
 }
 
-int main() {
+VNode *app() {
+  static const State<std::string> value = useState<std::string>("Value TEXT");
   VNode *root = (GCCX /*
-   <div>
-    <h1>HelloWorld!</h1>
-    <div style="width: 100%" id="box">
-      <button onclick={[](int a) -> int { return a + 1; }}>Test button</button>
+    <div>
+      <h1>Title</h1>
+      <p>{(*value).get()}</p>
+      <div>
+        <button
+          onclick={[=](const Event& e) -> void {
+            printf("onClick: 0x%06X\n", &e);
+            (*value).set("Changed Data");
+            printf("target: %s, type: %s\n", e.target->sel.c_str(), e.type.c_str());
+            // printf("value: %s\n", (*value).get().c_str());
+          }}
+          onkeydown={[=](const Event& e) -> void {
+            printf("onKeyDown: 0x%06X\n", &e);
+          }}>
+          Button
+        </button>
+      </div>
     </div>
-  </div> */);
-  scan_dom(root);
+  */);
+  return root;
+}
+
+int main() {
+  VNode *dom = nullptr;
+  for (int i = 0; i < 2; i++) {
+    dom = app();
+    scan_dom(dom);
+    delete dom;
+  }
   return 0;
 }

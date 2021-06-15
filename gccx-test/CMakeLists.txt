@@ -15,11 +15,12 @@ include_directories(${include_dirs})
 # Src
 
 file(GLOB_RECURSE source_files
-		"${PROJECT_SOURCE_DIR}/chi-dom/*.cpp" "${PROJECT_SOURCE_DIR}/chi-dom/*.h"
-		"${PROJECT_SOURCE_DIR}/chi-dom/**/*.cpp" "${PROJECT_SOURCE_DIR}/chi-dom/**/*.h")
+		"${PROJECT_SOURCE_DIR}/chi-dom/*.?pp"
+		"${PROJECT_SOURCE_DIR}/chi-dom/**/*.?pp" "${PROJECT_SOURCE_DIR}/chi-dom/**/*.h")
 message(STATUS "Source files: ${source_files}")
 
 add_executable(gccx-test ${PROJECT_SOURCE_DIR}/test_dist.cpp ${source_files})
+add_executable(gccx-test-disable ${PROJECT_SOURCE_DIR}/test.cpp ${source_files})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

@@ -1,12 +1,12 @@
 #ifndef asmdom_h_hpp
 #define asmdom_h_hpp
 
-#include "VNode/VNode.h"
+#include "VNode.hpp"
 #include <vector>
 #include <string>
 #include <map>
 
-namespace asmdom {
+namespace chidom {
 
 VNode *h(const std::string &sel) {
   return new VNode(sel);
