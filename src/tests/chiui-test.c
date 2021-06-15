@@ -11,7 +11,7 @@ int main() {
 <html>\
   <body>\
     <h1>Test Title</h1>\
-    <p fullWidth=\"Yes\" style=\"color: red\">Test Paragraphy</p>\
+    <p fullWidth=\"Yes\" style=\"color: red; width: 100%; height: 200%\">Test Paragraphy</p>\
     <p>Test Paragraphy</p>\
   </body>\
 </html>\
